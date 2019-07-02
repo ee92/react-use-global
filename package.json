@@ -28,5 +28,9 @@
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/ee92/react-use-global/issues"
+  },
+  "homepage": "https://github.com/ee92/react-use-global#readme"
 }
