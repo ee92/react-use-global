@@ -1,0 +1,28 @@
+{
+  "name": "react-use-global",
+  "version": "1.0.0",
+  "description": "React hook for using global state without unnecessary renders.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/babel src --out-file index.js"
+  },
+  "keywords": [
+    "react",
+    "global",
+    "state",
+    "store",
+    "hooks"
+  ],
+  "author": "Egor Egorov",
+  "license": "MIT",
+  "peer-dependencies": {
+    "react": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0"
+  }
+}
