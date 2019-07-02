@@ -19,6 +19,9 @@ npm install react-use-global --save
 |  function useGlobal |  (string path) => [any state, function setState]  | Takes a path (e.g. 'user.settings.nightMode'), returns the value and a function to set that value. |
 
 
+
+
+
 ### Example:
 ```js
 import React from 'react'
