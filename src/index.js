@@ -5,7 +5,7 @@ import {useState, useEffect} from 'react';
 // ['state', 'state.foo', 'state.foo.bar', 'state.foo.bar.baz', ...]
 // does NOT call ['state.something', 'state.foo.bubba', ...]
 const callListeners = (path, state, listeners) => {
-   const pathArr = path.split('.')
+   const pathArr = path ? path.split('.') : [];
    const pathKey = ['state'].concat(pathArr).join('.');
    const keys = Object.keys(listeners);
    for (let i=0; i<keys.length; i++) {
@@ -15,7 +15,8 @@ const callListeners = (path, state, listeners) => {
       const id = keys[i];
       if (!listeners[id]) continue;
       for (let j=0; j<listeners[id].length; j++) {
-         const newState = pathArr.reduce((prev, curr) => prev[curr], state);
+         const idArr = id.split('.').slice(1);
+         const newState = idArr.reduce((prev, curr) => prev[curr], state);
          listeners[id][j](newState);
       }
    }
@@ -46,7 +47,7 @@ const setInnerState = (newState, path, state, listeners) => {
 // those changes set the local state and the component re-renders
 // returns [state, setState] like useState()
 const useGlobal = (path, state, listeners) => {
-   const pathArr = path.split('.');
+   const pathArr = path ? path.split('.') : [];
    const innerState = pathArr.reduce((prev, curr) => prev[curr], state);
    if (innerState === undefined) throw Error(path + ' is undefined');
    const [value, setValue] = useState(innerState);
@@ -56,7 +57,9 @@ const useGlobal = (path, state, listeners) => {
          listeners[id] = [];
       }
       listeners[id].push(setValue)
-      return () => listeners[id].filter(listener => listener !== setValue);
+      return () => {
+			listeners[id] = listeners[id].filter(x => x !== setValue);
+		}
    // eslint-disable-next-line
    }, []);
    return [value, (value) => setInnerState(value, path, state, listeners)];

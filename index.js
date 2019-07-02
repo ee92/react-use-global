@@ -20,7 +20,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // ['state', 'state.foo', 'state.foo.bar', 'state.foo.bar.baz', ...]
 // does NOT call ['state.something', 'state.foo.bubba', ...]
 var callListeners = function callListeners(path, state, listeners) {
-  var pathArr = path.split('.');
+  var pathArr = path ? path.split('.') : [];
   var pathKey = ['state'].concat(pathArr).join('.');
   var keys = Object.keys(listeners);
 
@@ -32,7 +32,8 @@ var callListeners = function callListeners(path, state, listeners) {
     if (!listeners[id]) continue;
 
     for (var j = 0; j < listeners[id].length; j++) {
-      var newState = pathArr.reduce(function (prev, curr) {
+      var idArr = id.split('.').slice(1);
+      var newState = idArr.reduce(function (prev, curr) {
         return prev[curr];
       }, state);
       listeners[id][j](newState);
@@ -68,7 +69,7 @@ var setInnerState = function setInnerState(newState, path, state, listeners) {
 
 
 var useGlobal = function useGlobal(path, state, listeners) {
-  var pathArr = path.split('.');
+  var pathArr = path ? path.split('.') : [];
   var innerState = pathArr.reduce(function (prev, curr) {
     return prev[curr];
   }, state);
@@ -88,8 +89,8 @@ var useGlobal = function useGlobal(path, state, listeners) {
 
     listeners[id].push(setValue);
     return function () {
-      return listeners[id].filter(function (listener) {
-        return listener !== setValue;
+      listeners[id] = listeners[id].filter(function (x) {
+        return x !== setValue;
       });
     }; // eslint-disable-next-line
   }, []);
