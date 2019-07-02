@@ -14,9 +14,9 @@ npm install react-use-global --save
 ### Use:
 
 | API | usage | description |
-| ------------ | ------------ |
+| ------------ | ------------ | ------------ |
 |  function createGlobal |  (any initialState) =>  function useGlobal | Imported from 'react-use-global'. Takes initial state value, returns useGlobal function.  |
-|  function useGlobal |  (string path) => [any state, function setState]  | Takes a path (e.g. 'user.settings.nightMode'), returns the value and a function to set that value. |
+|  function useGlobal |  (string path) => [any state, function setState]  | Takes a path (e.g. 'user.settings.nightMode'), returns the value and a function to set that value. Just like React's useState. |
 
 
 
