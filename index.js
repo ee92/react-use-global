@@ -16,29 +16,25 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 // calls all listeners associated with a path
-// e.g. path 'foo.bar' calls all listeners at:
-// ['state', 'state.foo', 'state.foo.bar', 'state.foo.bar.baz', ...]
-// does NOT call ['state.something', 'state.foo.bubba', ...]
+// upstream and downstream
 var callListeners = function callListeners(path, state, listeners) {
   var pathArr = path ? path.split('.') : [];
   var pathKey = ['state'].concat(pathArr).join('.');
   var keys = Object.keys(listeners);
-
-  for (var i = 0; i < keys.length; i++) {
-    var hasPrefix = pathKey.startsWith(keys[i]);
-    var isPrefix = keys[i].startsWith(pathKey);
-    if (!hasPrefix && !isPrefix) continue;
-    var id = keys[i];
-    if (!listeners[id]) continue;
-
-    for (var j = 0; j < listeners[id].length; j++) {
-      var idArr = id.split('.').slice(1);
-      var newState = idArr.reduce(function (prev, curr) {
-        return prev[curr];
-      }, state);
-      listeners[id][j](newState);
-    }
-  }
+  keys.forEach(function (key) {
+    var hasPrefix = pathKey.startsWith(key);
+    var isPrefix = key.startsWith(pathKey);
+    if (!hasPrefix && !isPrefix) return;
+    if (!listeners[key]) return;
+    var keyArr = key.split('.').slice(1);
+    var newState = keyArr.reduce(function (prev, curr) {
+      return prev[curr];
+    }, state);
+    newState = JSON.parse(JSON.stringify(newState));
+    listeners[key].forEach(function (listener) {
+      return listener(newState);
+    });
+  });
 }; // custom set function returned by useGlobal
 // sets the new state at the path to the current state
 // calls call associated listeners

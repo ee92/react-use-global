@@ -1,25 +1,21 @@
 import {useState, useEffect} from 'react';
 
 // calls all listeners associated with a path
-// e.g. path 'foo.bar' calls all listeners at:
-// ['state', 'state.foo', 'state.foo.bar', 'state.foo.bar.baz', ...]
-// does NOT call ['state.something', 'state.foo.bubba', ...]
+// upstream and downstream
 const callListeners = (path, state, listeners) => {
    const pathArr = path ? path.split('.') : [];
    const pathKey = ['state'].concat(pathArr).join('.');
    const keys = Object.keys(listeners);
-   for (let i=0; i<keys.length; i++) {
-      const hasPrefix = pathKey.startsWith(keys[i]);
-      const isPrefix = keys[i].startsWith(pathKey);
-      if (!hasPrefix && !isPrefix) continue;
-      const id = keys[i];
-      if (!listeners[id]) continue;
-      for (let j=0; j<listeners[id].length; j++) {
-         const idArr = id.split('.').slice(1);
-         const newState = idArr.reduce((prev, curr) => prev[curr], state);
-         listeners[id][j](newState);
-      }
-   }
+   keys.forEach(key => {
+      const hasPrefix = pathKey.startsWith(key);
+      const isPrefix = key.startsWith(pathKey);
+      if (!hasPrefix && !isPrefix) return;
+      if (!listeners[key]) return;
+      const keyArr = key.split('.').slice(1);
+      let newState = keyArr.reduce((prev, curr) => prev[curr], state);
+      newState = JSON.parse(JSON.stringify(newState));
+      listeners[key].forEach(listener => listener(newState));
+   })
 }
 
 // custom set function returned by useGlobal
@@ -56,12 +52,13 @@ const useGlobal = (path, state, listeners) => {
       if (!listeners[id]) {
          listeners[id] = [];
       }
-      listeners[id].push(setValue)
+      listeners[id].push(setValue);
       return () => {
 			listeners[id] = listeners[id].filter(x => x !== setValue);
 		}
    // eslint-disable-next-line
    }, []);
+
    return [value, (value) => setInnerState(value, path, state, listeners)];
 }
 
